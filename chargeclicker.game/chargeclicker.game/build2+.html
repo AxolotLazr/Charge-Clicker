@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Charge Clicker: Build 3</title>
+	</head>
+	<body class="body" id="body">
+		<span id="import_zone">
+			<link id="include" data-rel="UGC" href="/chargeclicker.game/mods/include.UGC">
+		</span>
+		<span id="click_zone">
+			<span id="clickable_outline">
+				<span id="clickable_power"></span>
+				<span id="clickable" onclick="button_clicked()">
+					<span id='clickable_showPower'></span>
+				</span>
+			</span>
+			<span class="notch_holder" id="notch_holder"></span>
+		</span>
+		<span id="upgrade_zone"></span>
+		<span id="fun_zone"></span>
+		<span id="settings_zone">
+			<text id="settings_topText" style="font-size: 3.5vh; left: 1vw;">Settings</text>
+			<setting class="guest_permission" style="top: 10vh; width: 17vw; height: 12vh;">
+				<text style="left: 1vw; top: 1vh;">Click with spacebar</text>
+				<label class="switch" style="left: 1vw; top: 5.5vh;">
+					<input id="setting_clickWithSpace" type="checkbox">
+					<span class="slider"></span>
+				</label>
+			</setting>
+			<setting id="setting_showFillAmount_holder" class="guest_permission" style="left: 19vw; top: 10vh; width: 16vw; height: 23vh;">
+				<text style="left: 1vw; top: 1vh;">Display fill amount</text>
+				<label class="switch" style="left: 1vw; top: 5.5vh;">
+					<input id="setting_showFillAmount" type="checkbox" checked>
+					<span class="slider"></span>
+				</label>
+				<span class="betaUser_permission">
+					<text style="left: 1vw; top: 11.5vh;">Use percent</text>
+					<label class="switch" style="left: 1vw; top: 16vh;">
+						<input id="setting_showFillAmount_usePercent" type="checkbox" checked>
+						<span class="slider"></span>
+					</label>
+				</span>
+			</setting>
+			<setting class="developer_permission" style="left: 36vw; top: 10vh; width: 12vw; height: 12vh;
+							background-color: rgb(64,0,64);
+							box-shadow: 0px 0px 5px 1px inset rgb(32,0,32), 0px 0px 5px 1px rgb(64,64,64);">
+				<text style="left: 1vw; top: 1vh;
+							color: rgb(255, 224, 255);
+							text-shadow: 0px 0px 5px rgb(192, 0, 160),
+										 0px 0px 5px rgb(192, 0, 160),
+										 0px 0px 5px rgb(192, 0, 160),
+										 0px 0px 5px rgb(192, 0, 160);">
+				Kawaii colors
+				</text>
+				<label class="switch" style="left: 1vw; top: 5.5vh;
+											 background-color: rgb(128,0,128);
+											 box-shadow: 0px 0px 5px 1px inset rgb(64,0,64), 0px 0px 5px 1px rgb(32,0,32);">
+					<input id="setting_kawaiiColors" type="checkbox">
+					<span class="slider" style="background-color: rgb(192,0,192);"></span>
+				</label>
+			</setting>
+		</span>
+		<span id="login_zone">
+			<span id="login_zone_box">
+				<span id="surf_users">
+
+				</span>
+				<span id="login_background">
+					<span onclick="loginAsGuest()" class="login_button" id="guest_login">
+						<text class="login_text">Guest</text>
+						<text class="login_mode"></text>
+					</span>
+					<span onclick="loginAsBetaTester()" class="login_button" id="betaTester_login" style="left: 16.75vw;">
+						<text class="login_text">Beta Tester</text>
+						<text class="login_mode"></text>
+					</span>
+					<span onclick="loginAsDeveloper()" class="login_button" id="developer_login" style="left: 32.5vw;">
+						<text class="login_text">Developer</text>
+						<span class="login_mode"></span>
+					</span>
+				</span>
+			</span>
+		</span>
+		<style>
+			body{
+				font-family: Arial, Helvetica, sans-serif;
+				scroll-behavior: smooth;
+				user-select: none;
+			}
+			::-webkit-scrollbar {
+				display: none;
+			}
+
+			#click_zone{
+				position: absolute;
+				left: 0vw;
+				top: 0vh;
+				width: 30vw;
+				height: 100vh;
+				background-color: rgb(128,128,128);
+			}
+			#upgrade_zone{
+				position: fixed;
+				right: 0%;
+				top: 0%;
+				width: 20%;
+				height: 100%;
+				background-color: rgb(128,128,128);
+
+				scroll-behavior:smooth;
+			}
+			#fun_zone{
+				position: absolute;
+				left: 30%;
+				top: 0%;
+				width: 50%;
+				height: 100%;
+				background-color: rgb(64,64,64);
+				box-shadow: 0px 0px 5px 1px inset, 0px 0px 5px 1px rgb(96,96,96);
+			}
+			#clickable_outline{
+				position: absolute;
+				left: 5vw;
+				top: 5vw;
+				width: 20vw;
+				height: 20vw;
+				border-radius: 50%;
+				background-image: conic-gradient(rgb(255,10,10) 0deg, rgb(255,255,0) 180deg, rgb(0,255,0) 360deg);
+				box-shadow: 0px 0px 5px 1px rgb(112,112,112);
+			}
+			#clickable{
+				cursor: pointer;
+				position: absolute;
+				left: 3.5vw;
+				top: 3.5vw;
+				width: 13vw;
+				height: 13vw;
+				border-radius: 50%;
+				background-image: linear-gradient(0deg, rgb(128,128,128), rgb(160,160,160));
+				box-shadow: 0px 0px 5px 1px, 0px 0px 5px 1px rgb(96,96,96) inset;
+				transition: all 0.1s;
+			}
+			#clickable:hover{
+				left: 3vw;
+				top: 3vw;
+				width: 14vw;
+				height: 14vw;
+			}
+			#clickable_power{
+				position: absolute;
+				left: 0%;
+				top: 0%;
+				width: 100%;
+				height: 100%;
+				border-radius: 50%;
+				box-shadow: 0px 0px 5px 1px inset;
+				transition: all 0.1s;
+			}
+			.notch_holder{
+				position: absolute;
+				left: 5vw;
+				bottom: 5vw;
+				width: 20vw;
+				height: 20vh;
+				border-radius: 1vw;
+				background-color: rgb(32,32,32);
+				box-shadow: 0px 0px 5px 1px inset, 0px 0px 5px 1px rgb(64,64,64);
+			}
+			#clickable_showPower{
+				position: absolute;
+				left: 0%;
+				top: 40%;
+				width: 100%;
+				height: 20%;
+				font-size: 2.5vw;
+				text-align: center;
+				user-select: none;
+			}
+			#settings_zone{
+				position: fixed;
+				left: 35%;
+				top: -100%;
+				width: 40%;
+				height: 105%;
+				border-radius: 1vw;
+				background-color: rgb(96,96,96);
+				box-shadow: 0px 0px 5px 1px, 0px 0px 5px 1px rgb(64,64,64) inset;
+				transition: all 0.2s ease-in-out;
+			}
+			#settings_zone:hover{
+				left: 27.5%;
+				top: 0%;
+				width: 55%;
+				height: 90%;
+			}
+			.switch{
+				position: absolute;
+				width: 5vw;
+				height: 5vh;
+				border-radius: 1vw;
+				background-color: rgb(64,64,64);
+				box-shadow: 0px 0px 5px 1px inset rgb(32,32,32), 0px 0px 5px 1px rgb(0,0,0);
+			}
+			.slider{
+				position: absolute;
+				left: 0.3vw;
+				top: 0.5vh;
+				width: 2.2vw;
+				height: 3.9vh;
+				border-radius: 0.7vw;
+				background-color: rgb(128,128,128);
+				box-shadow: 0px 0px 5px 1px rgb(32,32,32), 0px 0px 5px 1px inset rgb(64,64,64);
+				transition: all 0.2s;
+			}
+			input:checked + .slider{
+				user-select:unset;
+				left: 2.5vw;
+			}
+			.switch input{
+				opacity: 0;
+			}
+			text{
+				position: absolute;
+				font-size: 3vh;
+			}
+			#settings_topText{
+				top: 100vh;
+				transition: all 0.2s;
+			}
+			#settings_zone:hover #settings_topText{
+				top: 2vh;
+			}
+			setting{
+				color: rgb(128,128,128);
+				position: absolute;
+				left: 1vw;
+				height: 2vh;
+				width: 20vw;
+				height: 15vh;
+				border-radius: 1vw;
+				background-color: rgb(32,32,32);
+				box-shadow: 0px 0px 5px 1px inset rgb(0,0,0), 0px 0px 5px 1px rgb(64,64,64);
+			}
+			#login_zone{
+				position: absolute;
+				left: 0%;
+				top: 0%;
+				width: 100vw;
+				height: 100vh;
+				border-radius: 2vw;
+				backdrop-filter: blur(2vw);
+			} 
+			#login_zone_box{
+				position: absolute;
+				left: 25%;
+				top: 0%;
+				width: 50vw;
+				height: 100vh;
+				border-radius: 2vw;
+				background-color: rgb(128,128,128);
+				box-shadow: 0px 0px 10vw rgb(0,0,0), 0px 0px 1vw rgb(32,32,32) inset;
+			}
+			.user_box{
+				position: absolute;
+				left: 1vw;
+				top: 0vh;
+				width: 35vw;
+				height: 15vh;
+				border-radius: 1vw;
+				background-color: rgb(96,96,96);
+				box-shadow: 0px 0px 1vw rgb(0,0,0), 0px 0px 1vw rgb(43,43,43) inset;
+				transition: all 0.2s;
+			}
+			.user_box:hover{
+				width: 40vw;
+			}
+			.gold_user{
+				background-image: linear-gradient(-60deg,rgb(255,192,0) 50%, rgb(255,255,192) 80%, rgb(255,192,0) 100%);
+				text-shadow: 0px 0px 0.5vw rgb(255,192,0);
+				box-shadow: 0px 0px 1vw rgb(0,0,0), 0px 0px 1vw rgb(128,96,64) inset;
+				transition: all 0.2s;
+			}
+			.gold_user:hover{
+				background-image: linear-gradient(-40deg,rgb(255,192,0) 50%, rgb(255,255,192) 75%, rgb(255,192,0) 90%);
+			}
+			.user_box_usersName{
+				font-size: 5vh;
+				left: 1vw;
+				top: 2vh;
+				transition: all 0.2s;
+			}
+			.user_box:hover .user_box_usersName{
+				left: 5vw;
+			}
+			.user_box_usersPermission{
+				font-size: 4vh;
+				left: 1vw;
+				bottom: 2vh;
+				transition: all 0.2s;
+			}
+			.user_box:hover .user_box_usersPermission{
+				left: 2vw;
+			}
+			#surf_users{
+				overflow: auto;
+				position: absolute;
+				left: 1vw;
+				bottom: 2vh;
+				width: 48vw;
+				height: 58vh;
+				border-radius: 2vw;
+				background-color: rgb(64,64,64);
+				box-shadow: 0px 0px 1vw rgb(32,32,32), 0px 0px 1vw rgb(0,0,0) inset;
+			}
+			#login_background{
+				position: absolute;
+				left: 1vw;
+				top: 2vh;
+				width: 48vw;
+				height: 36vh;
+				border-radius: 2vw;
+				background-color: rgb(64,64,64);
+				box-shadow: 0px 0px 1vw rgb(32,32,32), 0px 0px 1vw rgb(0,0,0) inset;
+			}
+			.login_button{
+				position: absolute;
+				left: 1vw;
+				top: 2vh;
+				width: 14.5vw;
+				height: 32vh;
+				border-radius: 1vw;
+				background-color: rgb(96,96,96);
+				box-shadow: 0px 0px 1vw rgb(0,0,0), 0px 0px 1vw rgb(43,43,43) inset;
+				border-style: hidden;
+			}
+			.login_text{
+				font-size: 4vh;
+				left: 1vw;
+				top: 5vh;
+				transition: all 0.2s;
+			}
+			.login_button:hover .login_text{
+				top: 2vh;
+			}
+		</style>
+		<script>
+			let real_power = 0;
+			let display_power = real_power;
+			let max_power = 100;
+			let storage = 1;
+			let max_storage = 4;
+			let passive_power = 0;
+
+			let clicker_countup = 0;
+			let clicker_rate = 10;
+			let clicker_value = 0.01;
+			let clicker_boost = 0;
+			let clicker_boost_decay = 0.2;
+			let click_boost_amount = 5;
+
+			let Gee_I_wonder_how_many_upgrades_there_are = 0;
+			let Gee_I_wonder_how_many_developers_there_are = 0;
+			let Gee_I_wonder_how_many_betaUsers_there_are = 0;
+			let Gee_I_wonder_how_many_users_there_are = (Gee_I_wonder_how_many_betaUsers_there_are + Gee_I_wonder_how_many_developers_there_are); 
+			
+			let userTimeFlairs = [' ever since ', ' back from ', ' hailed from ', ' going back to '];
+
+			let encode = ['a','A','b','B','c','C','d','D','e','E','f','F','g','G','h','H','i','I','j','J','k','K','l','L','m','M','n','N','o','O','p','P','q','Q','r','R','s','S','t','T','u','U','v','V','w','W','x','X','y','Y','z','Z','0','1','2','3','4','5','6','7','8','9','!','@','#','$','%','^','&','*','-','_','=','+',';',':','<','.','>','/','?'];
+			let time = new Date();
+			let year = time.getFullYear();
+			let month = time.getMonth();
+			let date = time.getDate();
+			let day = time.getDay();
+			let betaCode = (encode[((year ** (day * month)) % encode.length)] + 
+								   encode[((month ** (day * 2)) % encode.length)] + 
+								   encode[((date ** (day * 3)) % encode.length)] + 
+								   encode[((year ** (day * 5)) % encode.length)] + 
+								   encode[((month ** (day * 8)) % encode.length)] + 
+								   encode[((date ** (day * 6)) % encode.length)] + 
+								   encode[((month ** (day * date)) % encode.length)] + 
+								   encode[((date ** (day * month)) % encode.length)]);
+			let devCode = (encode[((year ** (day * 1)) % encode.length)] + 
+								   encode[((month ** (day * 9)) % encode.length)] + 
+								   encode[((date ** (day * date)) % encode.length)] + 
+								   encode[((year ** (day * 7)) % encode.length)] + 
+								   encode[((month ** (date * 4)) % encode.length)] + 
+								   encode[((date ** (day * 8)) % encode.length)] + 
+								   encode[((month ** (day * 3)) % encode.length)] + 
+								   encode[((date ** (date * 5)) % encode.length)]);
+
+			new_user('developer','build 0','AxolotLazr', 'gold');
+			new_user('beta tester','build 0','CODRED555');
+			new_user('beta tester','build 0','D9Cabb');
+			new_user('beta tester','build 0','Null420');
+			new_user('beta tester','build 1','twinkletoes');
+			surf_users_endCap();
+
+			new_upgrade('Accumulator', 1);
+			new_upgrade('Coal Mine', 5);
+			new_upgrade('Coal Plant', 9);
+
+			setInterval(add_power, 1)
+			setInterval(update_power, 10);
+
+			function update_power(){
+				let clickable_power = document.getElementById('clickable_power');
+				let notch_holder = document.getElementById('notch_holder');
+				let clickable_showPower = document.getElementById('clickable_showPower');
+
+				display_power = get_bigNum(real_power);
+
+				notch_holder.innerHTML = '';
+				if (real_power > max_power){
+					if (storage < max_storage){
+						real_power -= max_power;
+						storage += 1;
+					} else {
+						real_power = max_power;
+					}
+				}
+				clickable_power.style.backgroundImage = 'conic-gradient(rgba(0,0,0,0) ' + ((((real_power / max_power) * 100) - 0.1) * 3.6) + 'deg, rgba(96,96,96,1) ' + (((real_power / max_power) * 100) * 3.6) + 'deg)';
+				if (document.getElementById('setting_showFillAmount').checked){
+					if (document.getElementById('setting_showFillAmount_usePercent').checked){
+						clickable_showPower.innerText = Math.floor((real_power / max_power) * 100) + '%';
+					} else {
+						clickable_showPower.innerText = display_power;
+					}
+				} else {
+					clickable_showPower.innerText = '';
+				}
+				for (progress = 0; progress < storage; progress++){
+					let new_notch = document.createElement('span');
+					new_notch.style.position = 'absolute';
+					new_notch.style.left = ((((100 / max_storage) * progress) * 0.9) + 6) + '%';
+					new_notch.style.top = '10%';
+					new_notch.style.width = (((100 / max_storage) * 0.9) - 2) + '%';
+					new_notch.style.height = '80%';
+					new_notch.style.borderRadius = '0.4vw';
+					new_notch.style.backgroundImage = 'linear-gradient(0deg, rgb(0,255,0), rgb(255,255,0))';
+					new_notch.style.boxShadow = '0px 0px 5px 1px, 0px 0px 5px 1px rgb(0,128,0) inset';
+
+					notch_holder.appendChild(new_notch);
+				}
+			}
+			function button_clicked(){
+				let click_mode = document.getElementById('setting_clickWithSpace').checked;
+				if (!click_mode){
+					click_boost();
+				}
+			}
+			function button_spaced(){
+				let click_mode = document.getElementById('setting_clickWithSpace').checked;
+				if (click_mode){
+					click_boost();
+				}
+			}
+			function click_boost(){
+				clicker_boost += click_boost_amount;
+			}
+			function add_power(){
+				if (clicker_countup >= clicker_rate){
+					real_power += passive_power
+					clicker_countup -= clicker_rate;
+					if (clicker_boost > 0){
+						if ((clicker_boost * clicker_boost_decay) > 0.01 || (clicker_boost * clicker_boost_decay) == 0){
+							real_power += (clicker_boost * clicker_boost_decay);
+							clicker_boost -= (clicker_boost * clicker_boost_decay);
+						} else {
+							real_power += 0.01;
+							clicker_boost -= 0.01;
+						}
+					} else {
+						clicker_boost = 0;
+					}
+				}
+				clicker_countup += 1;
+			}
+			function new_upgrade(upgrade_name, upgrade_cost){
+				let upgrade_zone = document.getElementById('upgrade_zone');
+				let newUpgrade = document.createElement('span');
+				let upgradeCost = document.createElement('span');
+				newUpgrade.className = 'developer_permission';
+				newUpgrade.style.position = 'absolute';
+				newUpgrade.style.left = '10%';
+				newUpgrade.style.top = (5 + (20 * Gee_I_wonder_how_many_upgrades_there_are)) + 'vh';
+				newUpgrade.style.width = '80%';
+				newUpgrade.style.height = '15vh';
+				newUpgrade.style.borderRadius = '1vw';
+				newUpgrade.style.backgroundColor = 'rgb(96,96,96)';
+				newUpgrade.style.boxShadow = '0px 0px 5px 1px rgb(64,64,64), 0px 0px 5px 1px rgb(32,32,32) inset';
+
+				newUpgrade.innerHTML = '<span style="position:absolute; left: 4%; top:5%; font-size:2.25vw;">' + upgrade_name + '</span>';
+				upgradeCost.innerHTML = '<span class="notch_holder" style="position: absolute; left: 4%; bottom:10%; width:45%; height:40%; border-radius:0.6vw;"></span>';
+
+				newUpgrade.appendChild(upgradeCost);
+
+				
+
+				upgrade_zone.appendChild(newUpgrade);
+				Gee_I_wonder_how_many_upgrades_there_are++;
+			}
+			document.body.onkeyup = function(e) {
+				e.preventDefault() 
+				if (e.key == " " || e.code == "Space" || e.keyCode == 32){
+					button_spaced();
+				}
+			}
+			function get_bigNum(number, returnFull = true){
+				if (number < (10 ** 3)){
+					if (returnFull){
+						return Math.floor(number / 1) + '';
+					} else {
+						return '';
+					}
+				} else if (number < (10 ** 6)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 3)) + 'K';
+					} else {
+						return 'K';
+					}
+				} else if (number < (10 ** 9)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 6)) + 'M';
+					} else {
+						return 'M';
+					}
+				} else if (number < (10 ** 12)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 9)) + 'B';
+					} else {
+						return 'B';
+					}
+				} else if (number < (10 ** 15)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 12)) + 'T';
+					} else {
+						return 'T';
+					}
+				} else if (number < (10 ** 18)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 15)) + 'Qa';
+					} else {
+						return 'Qa';
+					}
+				} else if (number < (10 ** 21)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 18)) + 'QI';
+					} else {
+						return 'QI';
+					}
+				} else if (number < (10 ** 24)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 21)) + 'Sx';
+					} else {
+						return 'Sx';
+					}
+				} else if (number < (10 ** 27)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 24)) + 'Sp';
+					} else {
+						return 'Sp';
+					}
+				} else if (number < (10 ** 30)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 27)) + 'Oc';
+					} else {
+						return 'Oc';
+					}
+				} else if (number < (10 ** 33)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 30)) + 'No';
+					} else {
+						return 'No';
+					}
+				} else if (number < (10 ** 36)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 33)) + 'Dc';
+					} else {
+						return 'Dc';
+					}
+				} else if (number < (10 ** 39)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 36)) + 'Udc';
+					} else {
+						return 'Udc';
+					}
+				} else if (number < (10 ** 42)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 39)) + 'Ddc';
+					} else {
+						return 'Ddc';
+					}
+				} else if (number < (10 ** 45)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 42)) + 'Tdc';
+					} else {
+						return 'Tdc';
+					}
+				} else if (number < (10 ** 48)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 45)) + 'Qadc';
+					} else {
+						return 'Qadc';
+					}
+				} else if (number < (10 ** 51)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 48)) + 'Qidc';
+					} else {
+						return 'Qidc';
+					}
+				} else if (number < (10 ** 54)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 51)) + 'Sxdc';
+					} else {
+						return 'Sxdc';
+					}
+				} else if (number < (10 ** 57)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 54)) + 'Spdc';
+					} else {
+						return 'Spdc';
+					}
+				} else if (number < (10 ** 60)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 57)) + 'Ocdc';
+					} else {
+						return 'Ocdc';
+					}
+				} else if (number < (10 ** 63)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 60)) + 'Nmdc';
+					} else {
+						return 'Nmdc';
+					}
+				} else if (number < (10 ** 66)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 63)) + 'Vg';
+					} else {
+						return 'Vg';
+					}
+				} else if (number < (10 ** 69)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 66)) + 'Uvg';
+					} else {
+						return 'Uvg';
+					}
+				} else if (number < (10 ** 72)){
+					if (returnFull){
+						return Math.floor(number / (10 ** 69)) + 'Dvg';
+					} else {
+						return 'Dvg';
+					}
+				} else {
+					if (returnFull){
+						return Math.floor(number / (10 ** 72)) + 'Tvg';
+					} else {
+						return 'Tvg';
+					}
+				}
+			}
+			function new_user(permission, timeIn, username, color='grey'){
+				let surf_users = document.getElementById('surf_users');
+					let new_user_box = document.createElement('span');
+						let text_usersName = document.createElement('text');
+						let text_usersPermission = document.createElement('text');
+
+					new_user_box.classList = 'user_box';
+					if (color == 'gold'){
+						new_user_box.classList += ' gold_user';
+					}
+					new_user_box.style.top = (2 + (Gee_I_wonder_how_many_users_there_are * 17)) + 'vh';
+
+						text_usersName.className = 'user_box_usersName'
+						text_usersName.innerText = username;
+
+						text_usersPermission.className = 'user_box_usersPermission';
+						text_usersPermission.innerText = permission + userTimeFlairs[Math.floor(Math.random() * userTimeFlairs.length)] + timeIn;
+						if (username == 'AxolotLazr'){
+							text_usersPermission.innerText = "developing since the dark ages";
+						}
+					
+					new_user_box.appendChild(text_usersName);
+					new_user_box.appendChild(text_usersPermission);
+				surf_users.appendChild(new_user_box);
+
+				if (permission == 'beta tester'){
+					Gee_I_wonder_how_many_betaUsers_there_are++;
+					Gee_I_wonder_how_many_users_there_are++;
+				} else if (permission == 'developer'){
+					Gee_I_wonder_how_many_developers_there_are++;
+					Gee_I_wonder_how_many_users_there_are++;
+				}
+			}
+			function surf_users_endCap(){
+				let surf_users = document.getElementById('surf_users');
+					let new_endCap = document.createElement('span');
+
+					new_endCap.style.position = 'absolute';
+					new_endCap.style.top = (Gee_I_wonder_how_many_users_there_are * 17) + 'vh';
+					new_endCap.style.width = '40vw'
+					new_endCap.style.height = '2vh';
+					new_endCap.style.backgroundColor = 'rgba(0,0,0,0)'
+
+				surf_users.appendChild(new_endCap);
+			}
+			function loginAsBetaTester(){
+			
+			}
+			function loginAsDeveloper(){
+			
+			}
+			function loginAsGuest(){
+				var allBetaElements = document.getElementsByClassName('betaUser_permission');
+				var allDevElements = document.getElementsByClassName('developer_permission');
+				var login_zone = document.getElementById('login_zone');
+				var setting_showFillAmount_holder = document.getElementById('setting_showFillAmount_holder');
+				for(var i = 0; i < allBetaElements.length; i++){
+    				allBetaElements[i].style.visibility = "hidden";
+    				allBetaElements[i].style.display = "none";
+    			}
+				for(var i = 0; i < allDevElements.length; i++){
+    				allDevElements[i].style.visibility = "hidden";
+    				allDevElements[i].style.display = "none";
+    			}
+				login_zone.style.visibility = 'hidden';
+				setting_showFillAmount_holder.style.height = '12vh';
+				storage = 0;
+				click_boost_amount = 1;
+			}
+			function importContent(){
+				let include = document.getElementById('include');
+				
+			}
+
+			//math functions
+			function random(){
+				return(Math.random());
+			}
+			function randIn(min,max){
+				return((Math.random() * (max - min)) + min);
+			}
+		</script>
+    </body>
+</html>
